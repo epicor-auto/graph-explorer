@@ -130,6 +130,7 @@ export default class GremlinQueryBox extends GremlinBasedComponent {
             console.log('disConnected2Gremlin');
             if (evt.code !== 3001) {
                 console.log('ws connection error');
+                alert("Failed to connect to the connection url " + this.props.gremlinUrl);
             }
             clearInterval(_this.reconnectingTimerId);
             // automatically try to reconnectWithWS on connection loss
@@ -190,7 +191,20 @@ export default class GremlinQueryBox extends GremlinBasedComponent {
     }
 
     generateQueryPayload(query) {
+        /* Uncomment for Datastax (DSE Graph) */
         return {
+            "requestId": UUIDGenerator(),
+            "op": "eval",
+            "processor": "",
+            "args": {
+                "gremlin": query,
+                "bindings": {},
+                "language": "gremlin-groovy" ,
+                "aliases":{"g":"jsonTest.g"}
+            }
+        };
+        /*
+       return {
             "requestId": UUIDGenerator(),
             "op": "eval",
             "processor": "",
@@ -200,6 +214,7 @@ export default class GremlinQueryBox extends GremlinBasedComponent {
                 "language": "gremlin-groovy"
             }
         };
+        */
     }
 
     setQueryElapsedTimeCounter(count) {
@@ -248,10 +263,17 @@ export default class GremlinQueryBox extends GremlinBasedComponent {
                 this.setIsStreaming(true);
                 this.setStatusMessage("Gathering data from the stream");
                 this.streamResponses.push(response);
-            } else {
+            } else if (response.status.code === 200) {
                 this.streamResponses.push(response);
                 this.setIsStreaming(false);
                 this.setStatusMessage("Responded to the Query Successfully");
+                const responses = Object.assign(this.streamResponses);
+                this.flushStreamResponsesData();
+                this._processResponse(responses);
+            } else if (response.status.code === 204) {
+                this.streamResponses.push(response);
+                this.setIsStreaming(false);
+                this.setStatusMessage("No Data returned by Query");
                 const responses = Object.assign(this.streamResponses);
                 this.flushStreamResponsesData();
                 this._processResponse(responses);

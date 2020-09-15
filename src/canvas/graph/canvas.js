@@ -106,6 +106,7 @@ export default class D3ForceDirectedCanvas extends React.Component {
         return this.nodeIDtoLinkIDs[nodeId] || new Set();
     }
 
+/* not DSE compatible 
     expandInLinksAndNodes(selectedNode) {
         this.stopPropagatingChildClickEventToParentEl();
         console.log("expandInLinksAndNodes", selectedNode);
@@ -113,6 +114,19 @@ export default class D3ForceDirectedCanvas extends React.Component {
         let query_string = "node=g.V(" + selectedNode.id + ").toList(); " +
             "edges = g.V(" + selectedNode.id + ").outE().dedup().toList(); " +
             "other_nodes = g.V(" + selectedNode.id + ").outE().otherV().dedup().toList();" +
+            "[other_nodes,edges,node]";
+        this.props.queryGremlinServer(query_string);
+        return false;
+    }
+*/
+
+    expandInLinksAndNodes(selectedNode) {
+        this.stopPropagatingChildClickEventToParentEl();
+        console.log("expandInLinksAndNodes", selectedNode);
+        // TODO - improve performance of the query.
+        let query_string = "node=g.V('" + selectedNode.id.replaceAll("-", ":") + "').toList(); " +
+            "edges = g.V('" + selectedNode.id.replaceAll("-", ":") + "').inE().dedup().toList(); " +
+            "other_nodes = g.V('" + selectedNode.id.replaceAll("-", ":") + "').inE().otherV().dedup().toList();" +
             "[other_nodes,edges,node]";
         this.props.queryGremlinServer(query_string);
         return false;
@@ -126,6 +140,7 @@ export default class D3ForceDirectedCanvas extends React.Component {
         console.debug("onNodeClicked:: ignored, because this is from child");
     }
 
+/*
     expandOutLinksAndNodes(selectedNode) {
         this.stopPropagatingChildClickEventToParentEl();
         console.log("expandOutLinksAndNodes", selectedNode);
@@ -133,6 +148,19 @@ export default class D3ForceDirectedCanvas extends React.Component {
         let query_string = "node=g.V(" + selectedNode.id + ").toList(); " +
             "edges = g.V(" + selectedNode.id + ").inE().dedup().toList(); " +
             "other_nodes = g.V(" + selectedNode.id + ").inE().otherV().dedup().toList();" +
+            "[other_nodes,edges,node]";
+        this.props.queryGremlinServer(query_string);
+        return false;
+    }
+*/
+
+    expandOutLinksAndNodes(selectedNode) {
+        this.stopPropagatingChildClickEventToParentEl();
+        console.log("expandOutLinksAndNodes", selectedNode);
+        // TODO - improve performance of the query.
+        let query_string = "node=g.V('" + selectedNode.id.replaceAll("-", ":") + "').toList(); " +
+            "edges = g.V('" + selectedNode.id.replaceAll("-", ":") + "').outE().dedup().toList(); " +
+            "other_nodes = g.V('" + selectedNode.id.replaceAll("-", ":") + "').outE().otherV().dedup().toList();" +
             "[other_nodes,edges,node]";
         this.props.queryGremlinServer(query_string);
         return false;
@@ -258,7 +286,8 @@ export default class D3ForceDirectedCanvas extends React.Component {
                 } else if (arch_node.data.option_name === "vertex-options") {
                     _this.showVertexOptions(selectedNode);
                 } else if (arch_node.data.option_name === "start-querying") {
-                    const query = "node= g.V(" + selectedNode.id + ")";
+                    // Not DSE compatible const query = "node= g.V(" + selectedNode.id + ")";
+                    const query = "node= g.V('" + selectedNode.id.replaceAll("-", ":") + "')";
                     _this.props.startQuery(query)
                 }
             });

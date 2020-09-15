@@ -1,7 +1,9 @@
 import {CONNECT_URL, AUTH_CONSTANTS} from "../config";
 import GremlinResponseSerializers from "./gremlin-serializer";
+import DseResponseSerializers from "./dse-serializer";
 
-const gremlinSerializer = new GremlinResponseSerializers();
+//const gremlinSerializer = new GremlinResponseSerializers();
+const gremlinSerializer = new DseResponseSerializers();
 
 function padZero(str, len) {
     len = len || 2;

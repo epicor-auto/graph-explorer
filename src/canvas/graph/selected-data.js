@@ -64,7 +64,8 @@ export default class SelectedDataCanvas extends React.Component {
 
                     <div className={'singleProperty dark'} key={cleanedData.id}>
                         <div className={"propertyData"}>
-                            <strong className={"propertyKey"}>id:</strong> {cleanedData.id}
+                            <!-- NOT DSE COMPatible strong className={"propertyKey"}>id:</strong> {cleanedData.id} -->
+                            <strong className={"propertyKey"}>id:</strong> {cleanedData.id.replaceAll("-",":")}
                         </div>
                     </div>
                     <div className={'singleProperty dark'} key={cleanedData.type}>
